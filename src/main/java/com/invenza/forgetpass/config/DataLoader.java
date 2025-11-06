@@ -19,14 +19,17 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (!userRepository.findByEmail("demo@gmail.com").isPresent()) {
+        if (!userRepository.findByEmail("pavithrasingh1010@gmail.com").isPresent()) {
             User user = new User();
-            user.setEmail("demo@gmail.com");
+            // Removed username since DB has no such column
+            user.setEmail("pavithrasingh1010@gmail.com");
             user.setMobile("9876543210");
-            user.setPassword(encoder.encode("password123"));
+            user.setPassword(encoder.encode("pavithra@10"));
             user.setEnabled(true);
             userRepository.save(user);
-            System.out.println("✅ Demo user inserted.");
+            System.out.println("Demo user inserted successfully.");
+        } else {
+            System.out.println("Demo user already exists.");
         }
     }
 }

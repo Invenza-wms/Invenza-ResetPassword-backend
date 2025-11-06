@@ -1,19 +1,20 @@
 package com.invenza.forgetpass.service;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.Random;
+import java.util.UUID;
+
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.invenza.forgetpass.dto.requests.ResetPasswordRequest;
 import com.invenza.forgetpass.dto.requests.SendOtp;
 import com.invenza.forgetpass.dto.requests.VerifyOtp;
-import com.invenza.forgetpass.dto.requests.ResetPasswordRequest;
 import com.invenza.forgetpass.model.OtpToken;
 import com.invenza.forgetpass.model.User;
 import com.invenza.forgetpass.repository.OtpTokenRepository;
 import com.invenza.forgetpass.repository.UserRepository;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import java.time.Instant;
-import java.util.Optional;
-import java.util.Random;
-import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -27,7 +28,6 @@ public class AuthService {
         this.otpTokenRepository = otpTokenRepository;
     }
 
-    // ✅ Send OTP (dummy SMS)
     public void sendOtp(SendOtp req) {
         String identifier = req.getIdentifier();
 
@@ -48,13 +48,13 @@ public class AuthService {
         OtpToken token = new OtpToken();
         token.setUser(user);
         token.setCode(otp);
-        token.setExpiresAt(Instant.now().plusSeconds(300)); 
+       token.setExpiresAt(LocalDateTime.now().plusSeconds(300));
+
         token.setUsed(false);
 
         otpTokenRepository.save(token);
     }
 
-    // ✅ OTP Verification
     public String verifyOtp(VerifyOtp req) {
         Optional<OtpToken> otpData = otpTokenRepository.findByCode(req.getOtp());
 
@@ -63,7 +63,8 @@ public class AuthService {
         }
 
         OtpToken token = otpData.get();
-        if (token.getExpiresAt().isBefore(Instant.now())) {
+        if (token.getExpiresAt().isBefore(LocalDateTime.now())) {
+
             throw new IllegalArgumentException("OTP expired!");
         }
 
@@ -75,7 +76,6 @@ public class AuthService {
         return resetToken;
     }
 
-    // ✅ Reset Password
     public void resetPassword(ResetPasswordRequest req) {
         Optional<OtpToken> otpData = otpTokenRepository.findByResetToken(req.getResetToken());
 
@@ -92,6 +92,6 @@ public class AuthService {
         token.setUsed(true);
         otpTokenRepository.save(token);
 
-        System.out.println("✅ Password updated successfully!");
+        System.out.println("Password updated successfully!");
     }
 }

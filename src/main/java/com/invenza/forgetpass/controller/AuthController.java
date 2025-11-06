@@ -25,22 +25,18 @@ public class AuthController {
     public AuthController(AuthService authService) {
         this.authService = authService;
     }
-
-    // ✅ OTP both Email + Mobile
     @PostMapping("/send-otp")
     public ResponseEntity<?> sendOtp(@RequestBody @Valid SendOtp req) {
         authService.sendOtp(req);
         return ResponseEntity.ok(new ApiResponse(true, "OTP sent successfully!", null));
     }
 
-    // ✅ Used after receiving OTP
     @PostMapping("/verify-otp")
     public ResponseEntity<?> verifyOtp(@RequestBody @Valid VerifyOtp req) {
         String resetToken = authService.verifyOtp(req);
         return ResponseEntity.ok(new ApiResponse(true, "OTP verified successfully!", resetToken));
     }
 
-    // ✅ Shortcut for forgot password
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestBody @Valid ForgotPasswordRequest req) {
         SendOtp otpRequest = new SendOtp();
@@ -50,7 +46,6 @@ public class AuthController {
         return ResponseEntity.ok(new ApiResponse(true, "OTP sent successfully!", null));
     }
 
-    // ✅ Reset password using resetToken
     @PutMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestBody @Valid ResetPasswordRequest req) {
         authService.resetPassword(req);
